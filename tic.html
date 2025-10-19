@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <style>
+    * { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
+    body { display:flex; justify-content:center; align-items:center; height:100vh; background: linear-gradient(135deg, #00c6ff, #0072ff); }
+    .game-container { text-align:center; }
+    h1 { color:white; margin-bottom: 10px; font-size:2.5rem; }
+    .turn { color:white; font-size:1.2rem; margin-bottom: 20px; }
+    .board { display:grid; grid-template-columns:repeat(3,100px); grid-template-rows:repeat(3,100px); gap:5px; justify-content:center; margin:0 auto; }
+    .cell { background:white; border:2px solid #0072ff; display:flex; justify-content:center; align-items:center; font-size:2rem; cursor:pointer; transition:0.3s; }
+    .cell:hover { background:#f0f0f0; }
+    .message { display:none; color:white; margin-top:20px; }
+    .message p { font-size:1.5rem; margin-bottom:10px; }
+    button { padding:8px 15px; border:none; border-radius:5px; background:white; color:#0072ff; font-size:1rem; cursor:pointer; font-weight:bold; transition:0.3s; }
+    button:hover { background:#e0e0e0; }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    <h1>Tic Tac Toe</h1>
+    <div class="turn" id="turnText">Player X Turn</div>
+    <div class="board" id="board">
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+    </div>
+    <div class="message" id="winningMessage">
+      <p id="messageText"></p>
+      <button id="restartButton">Restart Game</button>
+    </div>
+  </div>
+
+  <script>
+    const cellElements = document.querySelectorAll("[data-cell]");
+    const board = document.getElementById("board");
+    const turnText = document.getElementById("turnText");
+    const winningMessageElement = document.getElementById("winningMessage");
+    const messageText = document.getElementById("messageText");
+    const restartButton = document.getElementById("restartButton");
+
+    const X_CLASS = "X";
+    const O_CLASS = "O";
+    let oTurn;
+
+    const WINNING_COMBINATIONS = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+
+    startGame();
+    restartButton.addEventListener("click", startGame);
+
+    function startGame() {
+      oTurn = false;
+      turnText.textContent = "Player X Turn";
+      cellElements.forEach(cell => {
+        cell.textContent = "";
+        cell.classList.remove(X_CLASS);
+        cell.classList.remove(O_CLASS);
+        cell.removeEventListener("click", handleClick);
+        cell.addEventListener("click", handleClick, { once:true });
+      });
+      winningMessageElement.style.display = "none";
+    }
+
+    function handleClick(e) {
+      const cell = e.target;
+      const currentClass = oTurn ? O_CLASS : X_CLASS;
+      cell.textContent = currentClass;
+      cell.classList.add(currentClass);
+
+      if (checkWin(currentClass)) {
+        endGame(false);
+      } else if (isDraw()) {
+        endGame(true);
+      } else {
+        oTurn = !oTurn;
+        turnText.textContent = `Player ${oTurn ? "O" : "X"} Turn`;
+      }
+    }
+
+    function checkWin(currentClass) {
+      return WINNING_COMBINATIONS.some(combination => {
+        return combination.every(index => cellElements[index].classList.contains(currentClass));
+      });
+    }
+
+    function isDraw() {
+      return [...cellElements].every(cell => cell.classList.contains(X_CLASS) || cell.classList.contains(O_CLASS));
+    }
+
+    function endGame(draw) {
+      if(draw) {
+        messageText.textContent = "It's a Draw!";
+      } else {
+        messageText.textContent = `${oTurn ? "O" : "X"} Wins!`;
+      }
+      winningMessageElement.style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
