@@ -1,2 +1,2 @@
 # PRODIGY_WD_03
-Task 03: Tic Tac Toe Web Application
+Task 03: Tic Tac Toe Web Application for Prodigy Infotech Internship
